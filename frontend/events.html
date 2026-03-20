@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Events - School Event Notification</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/events.css">
+</head>
+<body>
+  <div class="container">
+    <header class="navbar">
+      <h1>School Events</h1>
+      <div class="navbar-actions">
+        <button id="enableNotifications" class="btn btn-secondary">Enable Notifications</button>
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="events-container">
+        <h2>Upcoming Events</h2>
+        <div id="eventsList" class="events-list">
+          <p class="loading">Loading events...</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="successMessage" class="success-message"></div>
+  <div id="errorMessage" class="error-message"></div>
+
+  <script src="/js/api.ts"></script>
+  <script src="/js/notifications.ts"></script>
+  <script src="/js/events.ts"></script>
+</body>
+</html>

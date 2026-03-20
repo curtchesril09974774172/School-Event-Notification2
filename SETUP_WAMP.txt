@@ -1,0 +1,39 @@
+🚀 QUICK DATABASE SETUP - WAMP/MySQL
+
+1. IMPORT SQL SCRIPT:
+   ─────────────────
+   • Open phpMyAdmin: http://localhost/phpmyadmin
+   • Click "Import" tab
+   • Select: database_setup.sql (in your project root)
+   • Click "Go"
+   
+   ✓ This creates the school_events database with all tables
+
+2. VERIFY DATABASE:
+   ──────────────────
+   After import, you should see:
+   • school_events database
+   • users table (with 2 sample users)
+   • events table
+   • push_subscriptions table
+
+3. START BACKEND:
+   ────────────────
+   cd backend
+   npm run dev
+   
+   Expected: "Server is running on http://localhost:5000"
+
+4. START FRONTEND:
+   ────────────────
+   cd frontend
+   python -m http.server 8000
+   
+   Access: http://localhost:8000
+
+5. LOGIN:
+   ───────
+   Admin: admin@school.com / admin123
+   Student: student@school.com / student123
+
+That's it! System ready to use! 🎉

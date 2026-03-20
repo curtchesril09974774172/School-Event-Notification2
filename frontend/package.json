@@ -1,0 +1,19 @@
+{
+  "name": "school-event-notification-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for School Event Notification System",
+  "scripts": {
+    "serve": "http-server",
+    "dev": "http-server -p 8000"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "school",
+    "events",
+    "notifications",
+    "web-app"
+  ]
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - School Event Notification</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-container">
+    <header class="navbar">
+      <h1>Admin Dashboard</h1>
+      <div class="navbar-actions">
+        <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      <aside class="sidebar">
+        <nav class="nav-menu">
+          <button class="nav-item active" data-section="create-event">Create Event</button>
+          <button class="nav-item" data-section="manage-events">Manage Events</button>
+        </nav>
+      </aside>
+
+      <main class="admin-main">
+        <!-- Create Event Section -->
+        <section id="create-event" class="admin-section active">
+          <h2>Create New Event</h2>
+          <form id="createEventForm">
+            <div class="form-group">
+              <label for="title">Event Title</label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                required 
+                placeholder="Enter event title"
+              >
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea 
+                id="description" 
+                name="description" 
+                required 
+                placeholder="Enter event description"
+                rows="4"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="date">Event Date & Time</label>
+                <input 
+                  type="datetime-local" 
+                  id="date" 
+                  name="date" 
+                  required
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input 
+                  type="text" 
+                  id="location" 
+                  name="location" 
+                  required 
+                  placeholder="Enter event location"
+                >
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create Event</button>
+          </form>
+          <div id="createMessage" class="message"></div>
+        </section>
+
+        <!-- Manage Events Section -->
+        <section id="manage-events" class="admin-section">
+          <h2>Manage Events</h2>
+          <div id="manageEventsList" class="events-list">
+            <p class="loading">Loading events...</p>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="successMessage" class="success-message"></div>
+  <div id="errorMessage" class="error-message"></div>
+
+  <script src="/js/api.ts"></script>
+  <script src="/js/admin.ts"></script>
+</body>
+</html>
