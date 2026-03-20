@@ -1,35 +1,35 @@
 // Register page functionality
 const API_BASE_URL = 'http://localhost:5000/api';
 
-const registerForm = document.getElementById('registerForm') as HTMLFormElement;
-const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
-const successMessage = document.getElementById('successMessage') as HTMLDivElement;
+const registerForm = document.getElementById('registerForm');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
 
-function clearMessages(): void {
+function clearMessages() {
   errorMessage.textContent = '';
   successMessage.textContent = '';
   errorMessage.style.display = 'none';
   successMessage.style.display = 'none';
 }
 
-function showError(message: string): void {
+function showError(message) {
   clearMessages();
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
 }
 
-function showSuccess(message: string): void {
+function showSuccess(message) {
   clearMessages();
   successMessage.textContent = message;
   successMessage.style.display = 'block';
 }
 
-registerForm.addEventListener('submit', async (e: Event) => {
+registerForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMessages();
 
-  const email = (document.getElementById('email') as HTMLInputElement).value;
-  const password = (document.getElementById('password') as HTMLInputElement).value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -52,7 +52,7 @@ registerForm.addEventListener('submit', async (e: Event) => {
     setTimeout(() => {
       window.location.href = '/login.html';
     }, 1500);
-  } catch (error: any) {
+  } catch (error) {
     showError(error.message || 'Registration failed. Please try again.');
   }
 });

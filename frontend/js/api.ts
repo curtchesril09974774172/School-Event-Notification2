@@ -7,14 +7,9 @@ export async function apiCall(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   data?: any
 ): Promise<any> {
-  const token = localStorage.getItem('token');
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
 
   const options: RequestInit = {
     method,
@@ -27,15 +22,6 @@ export async function apiCall(
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
-
-    if (response.status === 401) {
-      // Token expired or invalid
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login.html';
-      throw new Error('Session expired. Please login again.');
-    }
-
     const responseData = await response.json();
 
     if (!response.ok) {

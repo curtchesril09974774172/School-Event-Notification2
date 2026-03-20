@@ -1,32 +1,25 @@
 {
-  "name": "school-event-notification-backend",
+  "name": "school-event-backend",
   "version": "1.0.0",
-  "description": "Backend API for School Event Notification System",
+  "description": "Backend for School Event Notification System",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "watch": "tsc --watch"
+    "dev": "tsc && node dist/index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.6",
-    "dotenv": "^16.6.1",
-    "express": "^4.22.1",
-    "express-validator": "^7.3.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^7.8.9",
-    "mysql2": "^3.20.0",
-    "web-push": "^3.6.7"
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^4.17.25",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^18.19.130",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.3.1",
+    "typescript": "^5.1.3"
   }
 }

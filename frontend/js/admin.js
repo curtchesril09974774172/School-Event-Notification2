@@ -6,18 +6,18 @@ if (!localStorage.getItem('isLoggedIn')) {
   window.location.href = '/login.html';
 }
 
-const createEventForm = document.getElementById('createEventForm') as HTMLFormElement;
-const logoutBtn = document.getElementById('logoutBtn') as HTMLButtonElement;
-const manageEventsList = document.getElementById('manageEventsList') as HTMLDivElement;
-const successMessage = document.getElementById('successMessage') as HTMLDivElement;
-const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
-const createMessage = document.getElementById('createMessage') as HTMLDivElement;
+const createEventForm = document.getElementById('createEventForm');
+const logoutBtn = document.getElementById('logoutBtn');
+const manageEventsList = document.getElementById('manageEventsList');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
+const createMessage = document.getElementById('createMessage');
 
 // Navigation items
-const navItems = document.querySelectorAll('.nav-item') as NodeListOf<HTMLButtonElement>;
-const adminSections = document.querySelectorAll('.admin-section') as NodeListOf<HTMLElement>;
+const navItems = document.querySelectorAll('.nav-item');
+const adminSections = document.querySelectorAll('.admin-section');
 
-function clearMessages(): void {
+function clearMessages() {
   errorMessage.textContent = '';
   successMessage.textContent = '';
   errorMessage.style.display = 'none';
@@ -26,24 +26,24 @@ function clearMessages(): void {
   createMessage.className = 'message';
 }
 
-function showError(message: string): void {
+function showError(message) {
   clearMessages();
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
 }
 
-function showSuccess(message: string): void {
+function showSuccess(message) {
   clearMessages();
   successMessage.textContent = message;
   successMessage.style.display = 'block';
 }
 
-function showCreateMessage(message: string, type: 'success' | 'error'): void {
+function showCreateMessage(message, type) {
   createMessage.textContent = message;
   createMessage.className = `message ${type}`;
 }
 
-function formatDate(dateString: string): string {
+function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -65,7 +65,7 @@ navItems.forEach((item) => {
 
     const sectionId = item.getAttribute('data-section');
     if (sectionId) {
-      const section = document.getElementById(sectionId) as HTMLElement;
+      const section = document.getElementById(sectionId);
       if (section) {
         section.classList.add('active');
       }
@@ -78,13 +78,13 @@ navItems.forEach((item) => {
 });
 
 // Create event handler
-createEventForm.addEventListener('submit', async (e: Event) => {
+createEventForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   clearMessages();
 
-  const title = (document.getElementById('title') as HTMLInputElement).value;
-  const description = (document.getElementById('description') as HTMLTextAreaElement).value;
-  const date = (document.getElementById('date') as HTMLInputElement).value;
+  const title = document.getElementById('title').value;
+  const description = document.getElementById('description').value;
+  const date = document.getElementById('date').value;
 
   try {
     const response = await fetch(`${API_BASE_URL}/events/`, {
@@ -106,15 +106,15 @@ createEventForm.addEventListener('submit', async (e: Event) => {
     createEventForm.reset();
 
     // Reload manage events if visible
-    if (document.getElementById('manage-events')?.classList.contains('active')) {
+    if (document.getElementById('manage-events').classList.contains('active')) {
       loadManageEvents();
     }
-  } catch (error: any) {
+  } catch (error) {
     showCreateMessage(error.message || 'Failed to create event', 'error');
   }
 });
 
-async function loadManageEvents(): Promise<void> {
+async function loadManageEvents() {
   try {
     const response = await fetch(`${API_BASE_URL}/events/`);
     const events = await response.json();
@@ -126,7 +126,7 @@ async function loadManageEvents(): Promise<void> {
 
     manageEventsList.innerHTML = events
       .map(
-        (event: any) => `
+        (event) => `
         <div class="event-card">
           <div class="event-header">
             <h3>${event.title}</h3>
@@ -143,8 +143,8 @@ async function loadManageEvents(): Promise<void> {
 
     // Attach event listeners to buttons
     document.querySelectorAll('.btn-delete').forEach((btn) => {
-      btn.addEventListener('click', async (e: Event) => {
-        const eventId = (e.target as HTMLElement).getAttribute('data-id');
+      btn.addEventListener('click', async (e) => {
+        const eventId = e.target.getAttribute('data-id');
         if (confirm('Are you sure you want to delete this event?')) {
           try {
             const deleteResponse = await fetch(`${API_BASE_URL}/events/${eventId}`, {
@@ -157,13 +157,13 @@ async function loadManageEvents(): Promise<void> {
 
             showSuccess('Event deleted successfully!');
             loadManageEvents();
-          } catch (error: any) {
+          } catch (error) {
             showError(error.message || 'Failed to delete event');
           }
         }
       });
     });
-  } catch (error: any) {
+  } catch (error) {
     showError(error.message || 'Failed to load events');
   }
 }
@@ -173,25 +173,4 @@ logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('userEmail');
   window.location.href = '/login.html';
-});
-            showError(error.message || 'Failed to delete event');
-          }
-        }
-      });
-    });
-
-    document.querySelectorAll('.btn-edit').forEach((btn) => {
-      btn.addEventListener('click', (e: Event) => {
-        const eventId = (e.target as HTMLElement).getAttribute('data-id');
-        // TODO: Implement edit functionality in modal
-        alert('Edit functionality can be implemented with a modal dialog');
-      });
-    });
-  } catch (error: any) {
-    manageEventsList.innerHTML = `<p class="error">Error loading events: ${error.message}</p>`;
-  }
-}
-
-logoutBtn.addEventListener('click', () => {
-  logout();
 });

@@ -1,100 +1,82 @@
-import { Response } from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import { AuthRequest } from '../middleware/auth';
+import { Request, Response } from 'express';
+import pool from '../database';
 
-export const register = async (req: any, res: Response): Promise<void> => {
+interface LoginRequestBody {
+  email: string;
+  password: string;
+}
+
+interface User {
+  id: number;
+  email: string;
+}
+
+export const login = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password, firstName, lastName, role } = req.body;
+    const { email, password } = req.body as LoginRequestBody;
 
-    // Check if user exists
-    const existingUser = await User.findOne(email);
-    if (existingUser) {
+    if (!email || !password) {
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
+    }
+
+    const connection = await pool.getConnection();
+
+    const [rows]: any = await connection.execute(
+      'SELECT * FROM users WHERE email = ? AND password = ?',
+      [email, password]
+    );
+
+    connection.release();
+
+    if (rows.length > 0) {
+      const user: User = {
+        id: rows[0].id,
+        email: rows[0].email
+      };
+      res.json({ success: true, user });
+    } else {
+      res.status(401).json({ success: false, message: 'Invalid credentials' });
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+export const register = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body as LoginRequestBody;
+
+    if (!email || !password) {
+      res.status(400).json({ message: 'Email and password are required' });
+      return;
+    }
+
+    const connection = await pool.getConnection();
+
+    // Check if user already exists
+    const [existingUser]: any = await connection.execute(
+      'SELECT * FROM users WHERE email = ?',
+      [email]
+    );
+
+    if (existingUser.length > 0) {
+      connection.release();
       res.status(400).json({ message: 'User already exists' });
       return;
     }
 
-    // Create new user
-    const user = await User.create({
-      email,
-      password,
-      firstName,
-      lastName,
-      role: role || 'student',
-    });
-
-    // Generate token
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
+    // Insert new user
+    await connection.execute(
+      'INSERT INTO users (email, password) VALUES (?, ?)',
+      [email, password]
     );
 
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-      },
-    });
+    connection.release();
+    res.json({ success: true, message: 'User registered successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering user', error });
-  }
-};
-
-export const login = async (req: any, res: Response): Promise<void> => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne(email);
-    if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
-      return;
-    }
-
-    const isPasswordValid = await User.comparePassword(user.password, password);
-    if (!isPasswordValid) {
-      res.status(401).json({ message: 'Invalid credentials' });
-      return;
-    }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error logging in', error });
-  }
-};
-
-export const getProfile = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const user = await User.findById(parseInt((req.user?.id as unknown) as string) || 0);
-    if (!user) {
-      res.status(404).json({ message: 'User not found' });
-      return;
-    }
-
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching profile', error });
+    console.error('Register error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

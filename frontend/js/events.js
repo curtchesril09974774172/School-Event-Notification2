@@ -1,36 +1,36 @@
 // Events page functionality
 const API_BASE_URL = 'http://localhost:5000/api';
 
-const eventsList = document.getElementById('eventsList') as HTMLDivElement;
-const logoutBtn = document.getElementById('logoutBtn') as HTMLButtonElement;
-const successMessage = document.getElementById('successMessage') as HTMLDivElement;
-const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
+const eventsList = document.getElementById('eventsList');
+const logoutBtn = document.getElementById('logoutBtn');
+const successMessage = document.getElementById('successMessage');
+const errorMessage = document.getElementById('errorMessage');
 
 // Check authentication
 if (!localStorage.getItem('isLoggedIn')) {
   window.location.href = '/login.html';
 }
 
-function clearMessages(): void {
+function clearMessages() {
   errorMessage.textContent = '';
   successMessage.textContent = '';
   errorMessage.style.display = 'none';
   successMessage.style.display = 'none';
 }
 
-function showError(message: string): void {
+function showError(message) {
   clearMessages();
   errorMessage.textContent = message;
   errorMessage.style.display = 'block';
 }
 
-function showSuccess(message: string): void {
+function showSuccess(message) {
   clearMessages();
   successMessage.textContent = message;
   successMessage.style.display = 'block';
 }
 
-function formatDate(dateString: string): string {
+function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -40,7 +40,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-async function loadEvents(): Promise<void> {
+async function loadEvents() {
   try {
     const response = await fetch(`${API_BASE_URL}/events/`);
     const events = await response.json();
@@ -52,7 +52,7 @@ async function loadEvents(): Promise<void> {
 
     eventsList.innerHTML = events
       .map(
-        (event: any) => `
+        (event) => `
         <div class="event-card">
           <div class="event-header">
             <h3>${event.title}</h3>
@@ -63,7 +63,7 @@ async function loadEvents(): Promise<void> {
       `
       )
       .join('');
-  } catch (error: any) {
+  } catch (error) {
     showError(error.message || 'Failed to load events');
   }
 }
@@ -73,10 +73,6 @@ logoutBtn.addEventListener('click', () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('userEmail');
   window.location.href = '/login.html';
-});
-
-// Load events on page load
-loadEvents();
 });
 
 // Load events on page load
