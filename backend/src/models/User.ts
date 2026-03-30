@@ -1,4 +1,4 @@
-import { pool } from '../database';
+import pool from '../database';
 import bcryptjs from 'bcryptjs';
 
 export interface IUser {
