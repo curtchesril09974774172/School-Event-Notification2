@@ -1,0 +1,36 @@
+# API Specification for <FEATURE>
+
+## Endpoints
+
+### <HTTP Method> <Endpoint Path>
+**Description:** <What this endpoint does>
+
+**Request:**
+- Method: <GET/POST/PUT/DELETE>
+- Headers:
+  - Content-Type: application/json
+  - Authorization: Bearer <token>
+- Body: <JSON schema or example>
+
+**Response:**
+- Status: 200 OK
+- Body: <JSON schema or example>
+
+**Error Responses:**
+- 400 Bad Request: <Reason>
+- 401 Unauthorized: <Reason>
+- 500 Internal Server Error: <Reason>
+
+<Add more endpoints as needed>
+
+## Data Models
+
+### <Model Name>
+```json
+{
+  "field1": "type",
+  "field2": "type"
+}
+```
+
+<Define all relevant data structures>

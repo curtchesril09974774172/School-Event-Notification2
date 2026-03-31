@@ -1,0 +1,13 @@
+# Acceptance Criteria for <FEATURE>
+
+## Scenario 1: <Scenario Name>
+**Given** <Initial context>
+**When** <Action performed>
+**Then** <Expected outcome>
+
+## Scenario 2: <Scenario Name>
+**Given** <Initial context>
+**When** <Action performed>
+**Then** <Expected outcome>
+
+<Add more scenarios as needed to cover all requirements>

@@ -1,0 +1,31 @@
+# Requirements for <FEATURE>
+
+## Functional Requirements
+
+### REQ-<FEATURE>-001: <Requirement Title>
+**Description:** <Detailed description of what the requirement entails>
+
+**Acceptance Criteria:**
+- <Bullet point criteria>
+- <Bullet point criteria>
+
+### REQ-<FEATURE>-002: <Requirement Title>
+**Description:** <Detailed description>
+
+**Acceptance Criteria:**
+- <Criteria>
+
+<Add more requirements as needed>
+
+## Non-Functional Requirements
+
+### REQ-<FEATURE>-NFR-001: Performance
+**Description:** <Performance requirements, e.g., response time, throughput>
+
+### REQ-<FEATURE>-NFR-002: Security
+**Description:** <Security requirements>
+
+### REQ-<FEATURE>-NFR-003: Usability
+**Description:** <Usability requirements>
+
+<Add more NFRs as needed>

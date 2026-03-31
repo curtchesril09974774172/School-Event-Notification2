@@ -1,0 +1,18 @@
+# Edge Cases and Error Conditions for <FEATURE>
+
+## Input Validation Edge Cases
+
+- <Invalid input scenario>
+- <Boundary value scenario>
+
+## Error Conditions
+
+- <Network failure scenario>
+- <Database unavailability scenario>
+
+## Boundary Conditions
+
+- <Minimum/maximum values>
+- <Empty/null inputs>
+
+<Ensure at least 2 bullets per category>

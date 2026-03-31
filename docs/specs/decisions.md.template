@@ -1,0 +1,16 @@
+# Decisions Log for <FEATURE>
+
+## <Date> - <Decision Title>
+**Context:** <Why this decision was needed>
+
+**Options Considered:**
+- Option 1: <Description>
+- Option 2: <Description>
+
+**Decision:** <What was chosen and why>
+
+**Consequences:** <Impact of this decision>
+
+---
+
+<Add more entries as decisions are made during development>

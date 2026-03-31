@@ -1,0 +1,20 @@
+# Invariants for <FEATURE>
+
+Invariants are conditions that must always hold true during the operation of the system.
+
+## Data Invariants
+
+- <Invariant description>
+- <Invariant description>
+
+## Business Logic Invariants
+
+- <Invariant description>
+- <Invariant description>
+
+## System Invariants
+
+- <Invariant description>
+- <Invariant description>
+
+<Ensure at least 2 bullets per category>

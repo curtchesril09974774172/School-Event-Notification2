@@ -1,0 +1,26 @@
+# Context for <FEATURE>
+
+## Overview
+
+<Provide a brief description of the feature and its purpose in the system>
+
+## Stakeholders
+
+- <List primary users or systems that interact with this feature>
+- <List secondary stakeholders if any>
+
+## Current State
+
+<Describe the current implementation status or existing related functionality>
+
+## Goals
+
+<What are the main objectives this feature should achieve>
+
+## Constraints
+
+<Any technical, business, or time constraints that apply>
+
+## Success Criteria
+
+<How will we know this feature is successful>
