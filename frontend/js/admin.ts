@@ -2,13 +2,22 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
 // Check authentication
-if (!localStorage.getItem('isLoggedIn')) {
-  window.location.href = '/login.html';
+const userRole = localStorage.getItem('userRole');
+if (!localStorage.getItem('isLoggedIn') || userRole !== 'admin') {
+  if (userRole === 'student') {
+    window.location.href = '/events.html';
+  } else {
+    window.location.href = '/login.html';
+  }
 }
 
 const createEventForm = document.getElementById('createEventForm') as HTMLFormElement;
 const logoutBtn = document.getElementById('logoutBtn') as HTMLButtonElement;
+const darkModeToggle = document.getElementById('darkModeToggle') as HTMLButtonElement;
 const manageEventsList = document.getElementById('manageEventsList') as HTMLDivElement;
+const viewEventsList = document.getElementById('viewEventsList') as HTMLDivElement;
+const eventSelect = document.getElementById('eventSelect') as HTMLSelectElement;
+const attendanceList = document.getElementById('attendanceList') as HTMLDivElement;
 const successMessage = document.getElementById('successMessage') as HTMLDivElement;
 const errorMessage = document.getElementById('errorMessage') as HTMLDivElement;
 const createMessage = document.getElementById('createMessage') as HTMLDivElement;
@@ -53,6 +62,30 @@ function formatDate(dateString: string): string {
   });
 }
 
+// Dark mode functionality
+function initDarkMode(): void {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    darkModeToggle.textContent = '☀️ Light Mode';
+  } else {
+    darkModeToggle.textContent = '🌙 Dark Mode';
+  }
+}
+
+darkModeToggle.addEventListener('click', () => {
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  if (currentTheme === 'dark') {
+    document.documentElement.removeAttribute('data-theme');
+    localStorage.setItem('theme', 'light');
+    darkModeToggle.textContent = '🌙 Dark Mode';
+  } else {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    localStorage.setItem('theme', 'dark');
+    darkModeToggle.textContent = '☀️ Light Mode';
+  }
+});
+
 // Section navigation
 navItems.forEach((item) => {
   item.addEventListener('click', () => {
@@ -72,6 +105,10 @@ navItems.forEach((item) => {
 
       if (sectionId === 'manage-events') {
         loadManageEvents();
+      } else if (sectionId === 'view-events') {
+        loadViewEvents();
+      } else if (sectionId === 'view-attendance') {
+        loadEventSelect();
       }
     }
   });
@@ -91,6 +128,7 @@ createEventForm.addEventListener('submit', async (e: Event) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
       },
       body: JSON.stringify({ title, description, date })
     });
@@ -116,7 +154,11 @@ createEventForm.addEventListener('submit', async (e: Event) => {
 
 async function loadManageEvents(): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/events/`);
+    const response = await fetch(`${API_BASE_URL}/events/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    });
     const events = await response.json();
 
     if (events.length === 0) {
@@ -148,7 +190,10 @@ async function loadManageEvents(): Promise<void> {
         if (confirm('Are you sure you want to delete this event?')) {
           try {
             const deleteResponse = await fetch(`${API_BASE_URL}/events/${eventId}`, {
-              method: 'DELETE'
+              method: 'DELETE',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+              }
             });
 
             if (!deleteResponse.ok) {
@@ -168,30 +213,106 @@ async function loadManageEvents(): Promise<void> {
   }
 }
 
-logoutBtn.addEventListener('click', () => {
-  localStorage.removeItem('isLoggedIn');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('userEmail');
-  window.location.href = '/login.html';
-});
-            showError(error.message || 'Failed to delete event');
-          }
-        }
-      });
+async function loadViewEvents(): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/events/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
     });
+    const events = await response.json();
 
-    document.querySelectorAll('.btn-edit').forEach((btn) => {
-      btn.addEventListener('click', (e: Event) => {
-        const eventId = (e.target as HTMLElement).getAttribute('data-id');
-        // TODO: Implement edit functionality in modal
-        alert('Edit functionality can be implemented with a modal dialog');
-      });
-    });
+    if (events.length === 0) {
+      viewEventsList.innerHTML = '<p class="no-events">No events scheduled yet.</p>';
+      return;
+    }
+
+    viewEventsList.innerHTML = events
+      .map(
+        (event: any) => `
+        <div class="event-card">
+          <div class="event-header">
+            <h3>${event.title}</h3>
+            <span class="event-date">${formatDate(event.date)}</span>
+          </div>
+          <p class="event-description">${event.description}</p>
+        </div>
+      `
+      )
+      .join('');
   } catch (error: any) {
-    manageEventsList.innerHTML = `<p class="error">Error loading events: ${error.message}</p>`;
+    showError(error.message || 'Failed to load events');
   }
 }
 
-logoutBtn.addEventListener('click', () => {
-  logout();
+async function loadEventSelect(): Promise<void> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/events/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    });
+    const events = await response.json();
+
+    eventSelect.innerHTML = '<option value="">Choose an event...</option>';
+    events.forEach((event: any) => {
+      const option = document.createElement('option');
+      option.value = event.id;
+      option.textContent = event.title;
+      eventSelect.appendChild(option);
+    });
+  } catch (error: any) {
+    showError(error.message || 'Failed to load events');
+  }
+}
+
+eventSelect.addEventListener('change', async (e: Event) => {
+  const eventId = (e.target as HTMLSelectElement).value;
+  if (!eventId) {
+    attendanceList.innerHTML = '<p class="loading">Select an event to view attendance</p>';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/attendance/${eventId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`
+      }
+    });
+    const attendance = await response.json();
+
+    if (attendance.length === 0) {
+      attendanceList.innerHTML = '<p class="no-events">No attendance records for this event.</p>';
+      return;
+    }
+
+    attendanceList.innerHTML = attendance
+      .map(
+        (record: any) => `
+        <div class="attendance-item">
+          <h4>${record.student_name}</h4>
+          <p><strong>Section:</strong> ${record.section}</p>
+          <p><strong>Year Level:</strong> ${record.year_level}</p>
+          <p><strong>Email:</strong> ${record.email}</p>
+          <p><strong>Submitted:</strong> ${new Date(record.timestamp).toLocaleString()}</p>
+          <img src="/uploads/${record.image_path}" alt="Attendance proof" />
+        </div>
+      `
+      )
+      .join('');
+  } catch (error: any) {
+    showError(error.message || 'Failed to load attendance');
+  }
 });
+
+logoutBtn.addEventListener('click', () => {
+  localStorage.removeItem('isLoggedIn');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('token');
+  window.location.href = '/login.html';
+});
+
+// Initialize dark mode
+initDarkMode();

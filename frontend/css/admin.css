@@ -175,7 +175,22 @@
     max-width: 100%;
   }
 
-  .events-list {
-    grid-template-columns: 1fr;
-  }
+.attendance-list {
+  margin-top: 2rem;
+}
+
+.attendance-item {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+
+.attendance-item img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
 }
