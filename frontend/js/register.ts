@@ -28,8 +28,11 @@ registerForm.addEventListener('submit', async (e: Event) => {
   e.preventDefault();
   clearMessages();
 
+  const firstName = (document.getElementById('firstName') as HTMLInputElement).value;
+  const lastName = (document.getElementById('lastName') as HTMLInputElement).value;
   const email = (document.getElementById('email') as HTMLInputElement).value;
   const password = (document.getElementById('password') as HTMLInputElement).value;
+  const role = (document.getElementById('role') as HTMLSelectElement).value as 'student' | 'admin';
 
   try {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
@@ -37,7 +40,7 @@ registerForm.addEventListener('submit', async (e: Event) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ firstName, lastName, email, password, role })
     });
 
     const data = await response.json();

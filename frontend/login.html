@@ -11,48 +11,17 @@
   <div class="auth-container">
     <div class="auth-box">
       <h1>School Event Notification</h1>
-      <h2>Login</h2>
+      <h2>Select Login Type</h2>
 
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            required 
-            placeholder="Enter your email"
-          >
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            required 
-            placeholder="Enter your password"
-          >
-        </div>
-
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
+      <div class="login-options">
+        <a class="btn btn-primary btn-block" href="/student-login.html">Student Login</a>
+        <a class="btn btn-secondary btn-block" href="/admin-login.html">Admin Login</a>
+      </div>
 
       <p class="auth-link">
-        Don't have an account? <a href="/register.html">Register here</a>
+        Don't have a student account? <a href="/register.html">Register here</a>
       </p>
-
-      <div id="errorMessage" class="error-message"></div>
-      <div id="successMessage" class="success-message"></div>
     </div>
   </div>
-
-  <script src="/js/login.js"></script>
-</body>
-</html>
-
-  <script src="/js/api.ts"></script>
-  <script src="/js/login.ts"></script>
 </body>
 </html>
