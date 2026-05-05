@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import pool from '../database';
 
 interface LoginRequestBody {
@@ -6,12 +7,21 @@ interface LoginRequestBody {
   password: string;
 }
 
+interface RegisterRequestBody {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role?: string;
+}
+
 interface User {
   id: number;
   email: string;
+  role: string;
 }
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+const login = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body as LoginRequestBody;
 
@@ -30,11 +40,17 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     connection.release();
 
     if (rows.length > 0) {
+      const role = rows[0].role || (rows[0].email === 'admin@school.com' ? 'admin' : 'student');
       const user: User = {
         id: rows[0].id,
-        email: rows[0].email
+        email: rows[0].email,
+        role
       };
-      res.json({ success: true, user });
+
+      // Generate proper JWT token
+      const token = jwt.sign(user, process.env.JWT_SECRET || 'secret', { expiresIn: '24h' });
+
+      res.json({ success: true, user, token });
     } else {
       res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
@@ -44,39 +60,42 @@ export const login = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const register = async (req: Request, res: Response): Promise<void> => {
+const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { email, password } = req.body as LoginRequestBody;
+    const { email, password, firstName, lastName, role } = req.body as RegisterRequestBody;
 
-    if (!email || !password) {
-      res.status(400).json({ message: 'Email and password are required' });
+    if (!email || !password || !firstName || !lastName) {
+      res.status(400).json({ message: 'All fields are required' });
       return;
     }
 
     const connection = await pool.getConnection();
 
     // Check if user already exists
-    const [existingUser]: any = await connection.execute(
-      'SELECT * FROM users WHERE email = ?',
+    const [existing]: any = await connection.execute(
+      'SELECT id FROM users WHERE email = ?',
       [email]
     );
 
-    if (existingUser.length > 0) {
+    if (existing.length > 0) {
       connection.release();
       res.status(400).json({ message: 'User already exists' });
       return;
     }
 
     // Insert new user
+    const userRole = role || 'student';
     await connection.execute(
-      'INSERT INTO users (email, password) VALUES (?, ?)',
-      [email, password]
+      'INSERT INTO users (email, password, firstName, lastName, role) VALUES (?, ?, ?, ?, ?)',
+      [email, password, firstName, lastName, userRole]
     );
 
     connection.release();
-    res.json({ success: true, message: 'User registered successfully' });
+    res.status(201).json({ success: true, message: 'User registered successfully' });
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Registration error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export { login, register };
