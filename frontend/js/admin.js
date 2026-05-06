@@ -20,6 +20,9 @@ const attendanceList = document.getElementById('attendanceList');
 const successMessage = document.getElementById('successMessage');
 const errorMessage = document.getElementById('errorMessage');
 const createMessage = document.getElementById('createMessage');
+const imageModal = document.getElementById('imageModal');
+const imageModalImg = document.getElementById('imageModalImg');
+const imageModalClose = document.getElementById('imageModalClose');
 // Navigation items
 const navItems = document.querySelectorAll('.nav-item');
 const adminSections = document.querySelectorAll('.admin-section');
@@ -44,6 +47,40 @@ function showSuccess(message) {
 function showCreateMessage(message, type) {
     createMessage.textContent = message;
     createMessage.className = `message ${type}`;
+}
+function openImageModal(src) {
+    if (!imageModal || !imageModalImg)
+        return;
+    imageModalImg.src = src;
+    imageModal.style.display = 'block';
+}
+function closeImageModal() {
+    if (!imageModal)
+        return;
+    imageModal.style.display = 'none';
+    if (imageModalImg)
+        imageModalImg.src = '';
+}
+if (imageModalClose) {
+    imageModalClose.addEventListener('click', closeImageModal);
+}
+if (imageModal) {
+    imageModal.addEventListener('click', (event) => {
+        if (event.target === imageModal) {
+            closeImageModal();
+        }
+    });
+}
+if (attendanceList) {
+    attendanceList.addEventListener('click', (event) => {
+        var _a;
+        if (((_a = event.target) === null || _a === void 0 ? void 0 : _a.classList.contains('view-photo-btn'))) {
+            const imageSrc = event.target.getAttribute('data-image');
+            if (imageSrc) {
+                openImageModal(imageSrc);
+            }
+        }
+    });
 }
 function formatDate(dateString) {
     const date = new Date(dateString);
@@ -265,7 +302,7 @@ eventSelect.addEventListener('change', async (e) => {
           <p><strong>Year Level:</strong> ${record.year_level}</p>
           <p><strong>Email:</strong> ${record.email}</p>
           <p><strong>Submitted:</strong> ${new Date(record.timestamp).toLocaleString()}</p>
-          <img src="/uploads/${record.image_path}" alt="Attendance proof" />
+          <button type="button" class="btn btn-secondary view-photo-btn" data-image="/uploads/${record.image_path}">View Photo</button>
         </div>
       `)
             .join('');
