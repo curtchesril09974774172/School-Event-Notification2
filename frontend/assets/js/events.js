@@ -116,7 +116,6 @@ attendanceForm.addEventListener('submit', async (e) => {
     clearMessages();
     const formData = new FormData(attendanceForm);
     const token = localStorage.getItem('token');
-    formData.append('token', token);
     
     // Show loading state
     const submitBtn = attendanceForm.querySelector('button[type="submit"]');
@@ -128,6 +127,9 @@ attendanceForm.addEventListener('submit', async (e) => {
         console.log('Submitting attendance...');
         const response = await fetch(`${API_BASE_URL}/attendance/`, {
             method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: formData
         });
         const data = await response.json();
