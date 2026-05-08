@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import multer from 'multer';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -7,6 +8,7 @@ export interface AuthRequest extends Request {
     email: string;
     role: 'admin' | 'student';
   };
+  file?: multer.File;
 }
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction): void => {

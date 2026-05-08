@@ -1,8 +1,7 @@
-import express from 'express';
+import express, { Response } from 'express';
 import multer from 'multer';
 import path from 'path';
-import jwt from 'jsonwebtoken';
-import { authMiddleware } from '../middleware/auth';
+import { authMiddleware, adminMiddleware, AuthRequest } from '../middleware/auth';
 import pool from '../database';
 
 const router = express.Router();
@@ -10,7 +9,7 @@ const router = express.Router();
 // Configure multer for image uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../../frontend/uploads'));
+    cb(null, path.join(__dirname, '../../../frontend/assets/uploads'));
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -31,25 +30,12 @@ const upload = multer({
 });
 
 // Submit attendance (student)
-router.post('/', upload.single('attendanceImage'), async (req: any, res: any) => {
+router.post('/', authMiddleware, upload.single('attendanceImage'), async (req: AuthRequest, res: Response) => {
   try {
-    // Handle authentication for file uploads
-    const token = req.body.token;
-    if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
-
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any;
-      req.user = decoded;
-    } catch (error) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-
     const { eventId, studentName, section, yearLevel } = req.body;
-    const studentId = req.user?.id;
+    const studentId = req.user?.id ? parseInt(req.user.id, 10) : NaN;
 
-    if (!eventId || !studentId || !studentName || !section || !yearLevel) {
+    if (!eventId || Number.isNaN(studentId) || !studentName || !section || !yearLevel) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -59,7 +45,6 @@ router.post('/', upload.single('attendanceImage'), async (req: any, res: any) =>
 
     const connection = await pool.getConnection();
 
-    // Check if already attended
     const [existing]: any = await connection.execute(
       'SELECT id FROM attendance WHERE event_id = ? AND student_id = ?',
       [eventId, studentId]
@@ -70,7 +55,6 @@ router.post('/', upload.single('attendanceImage'), async (req: any, res: any) =>
       return res.status(400).json({ message: 'Already attended this event' });
     }
 
-    // Insert attendance
     await connection.execute(
       'INSERT INTO attendance (event_id, student_id, student_name, section, year_level, image_path) VALUES (?, ?, ?, ?, ?, ?)',
       [eventId, studentId, studentName, section, yearLevel, req.file.filename]
@@ -85,7 +69,7 @@ router.post('/', upload.single('attendanceImage'), async (req: any, res: any) =>
 });
 
 // Get attendance for an event (admin)
-router.get('/:eventId', authMiddleware, async (req: any, res: any) => {
+router.get('/:eventId', authMiddleware, adminMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { eventId } = req.params;
 

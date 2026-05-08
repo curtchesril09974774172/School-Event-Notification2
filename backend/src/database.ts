@@ -1,10 +1,13 @@
 import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '', // WAMP default password is empty
-  database: 'school_events_app',
+  host: process.env.MYSQL_HOST || 'localhost',
+  user: process.env.MYSQL_USER || 'root',
+  password: process.env.MYSQL_PASSWORD || '',
+  database: process.env.MYSQL_DATABASE || 'school_events_app',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
